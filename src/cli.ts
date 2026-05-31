@@ -30,10 +30,11 @@ program
   .option('-d, --dry-run', 'Preview mode without actual changes', false)
   .option('-p, --path <path>', 'Scan specific directory or file')
   .option('--prefix <prefix>', 'Image path prefix (default: images)', 'images')
-  .option('--absolute', 'Use absolute paths instead of relative paths', false)
+  .option('--absolute', 'Use absolute paths like /images/xxx.jpg', false)
+  .option('--relative', 'Use relative paths like ../images/xxx.jpg', false)
   .action(async (opts) => {
     try {
-      await runDownload({ dryRun: opts.dryRun, scanPath: opts.path, imagePrefix: opts.prefix, useRelative: !opts.absolute });
+      await runDownload({ dryRun: opts.dryRun, scanPath: opts.path, imagePrefix: opts.prefix, useAbsolute: opts.absolute, useRelative: opts.relative });
     } catch (error) {
       console.error(pc.red('Error:'), error);
       process.exit(1);
@@ -55,15 +56,15 @@ program
 
 program
   .command('normalize')
-  .description('Normalize local image paths to relative or absolute format')
+  .description('Normalize local image paths (default: src-relative like images/xxx.jpg)')
   .option('-d, --dry-run', 'Preview mode without actual changes', false)
   .option('-p, --path <path>', 'Normalize specific directory or file')
   .option('--prefix <prefix>', 'Image path prefix (default: images)', 'images')
-  .option('--absolute', 'Use absolute paths (e.g. /images/xxx.jpg)', false)
-  .option('--src-relative', 'Use src-relative paths (e.g. images/xxx.jpg, good for local viewing)', false)
+  .option('--absolute', 'Use absolute paths like /images/xxx.jpg', false)
+  .option('--relative', 'Use relative paths like ../images/xxx.jpg', false)
   .action(async (opts) => {
     try {
-      await runNormalize({ dryRun: opts.dryRun, scanPath: opts.path, imagePrefix: opts.prefix, useRelative: !opts.absolute, useSrcRelative: opts.srcRelative });
+      await runNormalize({ dryRun: opts.dryRun, scanPath: opts.path, imagePrefix: opts.prefix, useAbsolute: opts.absolute, useRelative: opts.relative });
     } catch (error) {
       console.error(pc.red('Error:'), error);
       process.exit(1);

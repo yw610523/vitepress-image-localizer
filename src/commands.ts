@@ -63,10 +63,12 @@ export async function runScan(options: Partial<LocalizerOptions> & { dryRun?: bo
   console.log(pc.dim(`Total: ${result.totalImages} images in ${result.totalFiles} files`));
 }
 
-export async function runDownload(options: Partial<LocalizerOptions> & { dryRun?: boolean; useRelative?: boolean; useSrcRelative?: boolean } = {}) {
+export async function runDownload(options: Partial<LocalizerOptions> & { dryRun?: boolean; useAbsolute?: boolean; useRelative?: boolean } = {}) {
   const prefix = options.imagePrefix || 'images';
-  const useSrcRelative = options.useSrcRelative === true;
-  const useRelative = options.useRelative !== false; // 默认使用相对路径
+  // 默认使用 srcRelative 路径格式
+  const useAbsolute = options.useAbsolute === true;
+  const useRelative = options.useRelative === true;
+  const useSrcRelative = !useAbsolute && !useRelative; // 默认 srcRelative
   const config = await loadConfig(prefix);
   const imageDir = await getImageDir(config.srcDir!, prefix);
 
@@ -212,10 +214,12 @@ export async function runClean(options: { imagePrefix?: string } = {}) {
   console.log(pc.green(`\n✅ Deleted ${toDelete.length} images`));
 }
 
-export async function runNormalize(options: Partial<LocalizerOptions> & { dryRun?: boolean; useRelative?: boolean; useSrcRelative?: boolean } = {}) {
+export async function runNormalize(options: Partial<LocalizerOptions> & { dryRun?: boolean; useAbsolute?: boolean; useRelative?: boolean } = {}) {
   const prefix = options.imagePrefix || 'images';
-  const useSrcRelative = options.useSrcRelative === true;
-  const useRelative = options.useRelative !== false; // 默认使用相对路径
+  // 默认使用 srcRelative 路径格式
+  const useAbsolute = options.useAbsolute === true;
+  const useRelative = options.useRelative === true;
+  const useSrcRelative = !useAbsolute && !useRelative; // 默认 srcRelative
   const config = await loadConfig(prefix);
   const imageDir = await getImageDir(config.srcDir!, prefix);
 

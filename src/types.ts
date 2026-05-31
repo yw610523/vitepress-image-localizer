@@ -36,8 +36,8 @@ export interface LocalizerOptions {
   concurrency?: number;
   /** 指定扫描的路径（目录或文件） */
   scanPath?: string;
-  /** 是否使用相对路径，默认 true */
+  /** 是否使用相对路径，默认 false */
   useRelative?: boolean;
-  /** 是否使用基于 srcDir 的相对路径（如 images/xxx.jpg），默认 false */
-  useSrcRelative?: boolean;
+  /** 是否使用绝对路径，默认 false */
+  useAbsolute?: boolean;
 }
