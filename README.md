@@ -61,6 +61,24 @@ npx vitepress-image-localizer clean --prefix img
 2. 列出 `public/{prefix}/` 目录下未被引用的图片
 3. 提示选择要删除的图片（支持逗号分隔多选、`all` 全部删除、`none` 取消）
 
+### 规整本地图片路径
+
+```bash
+# 将本地图片路径规整为相对路径（默认）
+npx vitepress-image-localizer normalize
+
+# 将本地图片路径规整为绝对路径
+npx vitepress-image-localizer normalize --absolute
+
+# 预览模式
+npx vitepress-image-localizer normalize --dry-run
+
+# 规整指定目录
+npx vitepress-image-localizer normalize -p src/guide
+```
+
+用于统一已有本地图片引用的路径格式，不下载任何图片。
+
 ## 命令行选项
 
 | 命令 | 选项 | 说明 |
@@ -71,6 +89,10 @@ npx vitepress-image-localizer clean --prefix img
 | `download` | `--prefix <prefix>` | 图片路径前缀，默认 `images` |
 | `download` | `--absolute` | 使用绝对路径（默认相对路径） |
 | `clean` | `--prefix <prefix>` | 图片路径前缀，默认 `images` |
+| `normalize` | `-p, --path <path>` | 规整指定目录或文件中的图片路径 |
+| `normalize` | `-d, --dry-run` | 预览模式，不实际修改 |
+| `normalize` | `--prefix <prefix>` | 图片路径前缀，默认 `images` |
+| `normalize` | `--absolute` | 使用绝对路径（默认相对路径） |
 
 ## 工作原理
 
