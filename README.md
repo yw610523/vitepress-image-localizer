@@ -30,8 +30,11 @@ npx vitepress-image-localizer scan -p src/面试/07.DB/01.Index.md
 ### 下载并替换
 
 ```bash
-# 下载并替换整个项目的远程图片
+# 下载并替换整个项目的远程图片（默认使用相对路径）
 npx vitepress-image-localizer download
+
+# 使用绝对路径（如 /images/xxx.jpg）
+npx vitepress-image-localizer download --absolute
 
 # 下载并替换指定目录
 npx vitepress-image-localizer download -p src/面试/07.DB
@@ -66,17 +69,23 @@ npx vitepress-image-localizer clean --prefix img
 | `download` | `-p, --path <path>` | 下载指定目录或文件中的图片 |
 | `download` | `-d, --dry-run` | 预览模式，不实际修改 |
 | `download` | `--prefix <prefix>` | 图片路径前缀，默认 `images` |
+| `download` | `--absolute` | 使用绝对路径（默认相对路径） |
 | `clean` | `--prefix <prefix>` | 图片路径前缀，默认 `images` |
 
 ## 工作原理
 
 1. 扫描 `{srcDir}/**/*.md` 下所有 Markdown 文件
-2. 使用正则 `![](url)` 匹配图片链接（支持远程 URL 和本地 `/prefix/xxx` 路径）
+2. 使用正则 `![](url)` 匹配图片链接（支持远程 URL 和本地路径）
 3. 区分远程图片（下载）和本地图片（跳过）
 4. 下载远程图片到 `{srcDir}/public/{prefix}/`
 5. 生成唯一文件名（MD5 hash + 原扩展名）
-6. 替换原文件中的 URL 为本地路径 `/{prefix}/xxx.jpg`
+6. 替换原文件中的 URL 为本地路径（相对路径或绝对路径）
 7. `clean` 命令对比 Markdown 引用和本地图片，删除孤立文件
+
+### 路径模式
+
+- **相对路径（默认）**：根据 Markdown 文件位置计算相对路径，如 `../images/xxx.jpg`
+- **绝对路径（`--absolute`）**：使用 `/prefix/xxx.jpg` 格式，适合 VitePress 环境
 
 ## 配置
 
