@@ -2,7 +2,7 @@
 
 import { Command } from 'commander';
 import pc from 'picocolors';
-import { runScan, runDownload, runClean } from './commands.js';
+import { runScan, runDownload, runClean, runNormalize } from './commands.js';
 
 const program = new Command();
 
@@ -47,6 +47,22 @@ program
   .action(async (opts) => {
     try {
       await runClean({ imagePrefix: opts.prefix });
+    } catch (error) {
+      console.error(pc.red('Error:'), error);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('normalize')
+  .description('Normalize local image paths to relative or absolute format')
+  .option('-d, --dry-run', 'Preview mode without actual changes', false)
+  .option('-p, --path <path>', 'Normalize specific directory or file')
+  .option('--prefix <prefix>', 'Image path prefix (default: images)', 'images')
+  .option('--absolute', 'Use absolute paths instead of relative paths', false)
+  .action(async (opts) => {
+    try {
+      await runNormalize({ dryRun: opts.dryRun, scanPath: opts.path, imagePrefix: opts.prefix, useRelative: !opts.absolute });
     } catch (error) {
       console.error(pc.red('Error:'), error);
       process.exit(1);

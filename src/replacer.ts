@@ -77,6 +77,71 @@ export class Replacer {
     }
   }
 
+  /**
+   * 规整 Markdown 文件中的本地图片引用路径
+   * 支持将所有本地图片引用统一转换为相对路径或绝对路径
+   */
+  async normalize(
+    images: ImageInfo[],
+    dryRun: boolean = false,
+    prefix: string = 'images',
+    publicDir?: string,
+    useRelative: boolean = true
+  ): Promise<void> {
+    // 默认 publicDir 为 process.cwd()/public/prefix
+    const imgPublicDir = publicDir || path.join(process.cwd(), 'public', prefix);
+
+    // 按文件分组
+    const fileImages = new Map<string, ImageInfo[]>();
+    for (const img of images) {
+      if (!fileImages.has(img.filePath)) {
+        fileImages.set(img.filePath, []);
+      }
+      fileImages.get(img.filePath)!.push(img);
+    }
+
+    // 处理每个文件
+    for (const [filePath, imgs] of fileImages) {
+      const content = await fs.readFile(filePath, 'utf-8');
+      let newContent = content;
+
+      for (const img of imgs) {
+        // 从 URL 中提取文件名
+        const filename = img.url.split('/').pop();
+        if (!filename) continue;
+
+        let targetPath: string;
+        if (useRelative) {
+          // 计算相对路径：markdown所在目录 -> publicDir/filename
+          const mdDir = path.dirname(filePath);
+          targetPath = path.relative(mdDir, path.join(imgPublicDir, filename)).replace(/\\/g, '/');
+        } else {
+          // 使用绝对路径：/prefix/filename
+          targetPath = `/${prefix}/${filename}`;
+        }
+
+        // 替换 ![alt](url) 为 ![alt](../prefix/xxx.jpg) 或 ![alt](/prefix/xxx.jpg)
+        const pattern = new RegExp(
+          `!\\[([^\\]]*)\\]\\(${this.escapeRegex(img.url)}\\)`,
+          'g'
+        );
+        const replacement = `![$1](${targetPath})`;
+
+        if (dryRun) {
+          console.log(`${pc.yellow('DRY')} ${pc.gray(filePath)}:${img.line}`);
+          console.log(`${pc.gray('    ')} ${img.url} → ${targetPath}`);
+        } else {
+          newContent = newContent.replace(pattern, replacement);
+        }
+      }
+
+      if (!dryRun) {
+        await fs.writeFile(filePath, newContent, 'utf-8');
+        console.log(`${pc.green('NORM')} ${pc.gray(filePath)}`);
+      }
+    }
+  }
+
   private escapeRegex(str: string): string {
     return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   }

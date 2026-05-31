@@ -210,3 +210,35 @@ export async function runClean(options: { imagePrefix?: string } = {}) {
   }
   console.log(pc.green(`\n✅ Deleted ${toDelete.length} images`));
 }
+
+export async function runNormalize(options: Partial<LocalizerOptions> & { dryRun?: boolean; useRelative?: boolean } = {}) {
+  const prefix = options.imagePrefix || 'images';
+  const useRelative = options.useRelative !== false; // 默认使用相对路径
+  const config = await loadConfig(prefix);
+  const imageDir = await getImageDir(config.srcDir!, prefix);
+
+  const scanner = new Scanner(config.srcDir);
+  const replacer = new Replacer();
+
+  console.log(pc.bold('\n📐 Normalizing image paths...\n'));
+  const result = await scanner.scan({ ...config, scanPath: options.scanPath, imagePrefix: prefix });
+
+  // 只处理本地图片引用（排除远程 URL）
+  const localImages = result.images.filter(img => !img.url.startsWith('http'));
+
+  if (localImages.length === 0) {
+    console.log(pc.green('✅ No local images to normalize'));
+    return;
+  }
+
+  console.log(pc.dim(`Found ${localImages.length} local image references\n`));
+
+  if (!options.dryRun) {
+    console.log(pc.bold('\n✏️  Normalizing markdown files...\n'));
+    await replacer.normalize(localImages, options.dryRun, prefix, imageDir, useRelative);
+    console.log(pc.green(`\n✅ Normalized ${localImages.length} image references`));
+  } else {
+    // dry-run 模式需要手动调用 normalize 并打印预览
+    await replacer.normalize(localImages, true, prefix, imageDir, useRelative);
+  }
+}
