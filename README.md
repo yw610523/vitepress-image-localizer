@@ -70,6 +70,9 @@ npx vitepress-image-localizer normalize
 # 将本地图片路径规整为绝对路径
 npx vitepress-image-localizer normalize --absolute
 
+# 将本地图片路径规整为 src 相对路径（如 images/xxx.jpg），适合本地打开 md 查看
+npx vitepress-image-localizer normalize --src-relative
+
 # 预览模式
 npx vitepress-image-localizer normalize --dry-run
 
@@ -93,6 +96,7 @@ npx vitepress-image-localizer normalize -p src/guide
 | `normalize` | `-d, --dry-run` | 预览模式，不实际修改 |
 | `normalize` | `--prefix <prefix>` | 图片路径前缀，默认 `images` |
 | `normalize` | `--absolute` | 使用绝对路径（默认相对路径） |
+| `normalize` | `--src-relative` | 使用 src 相对路径（如 images/xxx.jpg） |
 
 ## 工作原理
 
