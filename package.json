@@ -1,0 +1,47 @@
+{
+  "name": "vitepress-image-localizer",
+  "version": "1.0.1",
+  "description": "Auto-download remote images and replace with local paths in VitePress",
+  "type": "module",
+  "bin": {
+    "vitepress-image-localizer": "./dist/cli.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "vitepress",
+    "image",
+    "localizer",
+    "markdown"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://git.yys2024.cn/yanwei/vitepress-image-localizer.git"
+  },
+  "homepage": "https://git.yys2024.cn/yanwei/vitepress-image-localizer",
+  "dependencies": {
+    "axios": "^1.7.2",
+    "commander": "^12.1.0",
+    "fs-extra": "^11.2.0",
+    "glob": "^10.4.5",
+    "picocolors": "^1.0.1"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "@types/glob": "^8.1.0",
+    "typescript": "^5.4.5"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "registry": "https://registry.yys2024.cn/repository/npm/"
+  }
+}
