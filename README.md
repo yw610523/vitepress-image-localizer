@@ -30,11 +30,14 @@ npx vitepress-image-localizer scan -p src/面试/07.DB/01.Index.md
 ### 下载并替换
 
 ```bash
-# 下载并替换整个项目的远程图片（默认使用相对路径）
+# 下载并替换整个项目的远程图片（默认使用 src 相对路径）
 npx vitepress-image-localizer download
 
-# 使用绝对路径（如 /images/xxx.jpg）
+# 使用绝对路径（如 /images/xxx.jpg，适合 VitePress 环境）
 npx vitepress-image-localizer download --absolute
+
+# 使用相对路径（如 ../images/xxx.jpg，根据 md 位置计算）
+npx vitepress-image-localizer download --relative
 
 # 下载并替换指定目录
 npx vitepress-image-localizer download -p src/面试/07.DB
@@ -64,14 +67,14 @@ npx vitepress-image-localizer clean --prefix img
 ### 规整本地图片路径
 
 ```bash
-# 将本地图片路径规整为相对路径（默认）
+# 将本地图片路径规整为 src 相对路径（默认，如 images/xxx.jpg）
 npx vitepress-image-localizer normalize
 
-# 将本地图片路径规整为绝对路径
+# 将本地图片路径规整为绝对路径（如 /images/xxx.jpg）
 npx vitepress-image-localizer normalize --absolute
 
-# 将本地图片路径规整为 src 相对路径（如 images/xxx.jpg），适合本地打开 md 查看
-npx vitepress-image-localizer normalize --src-relative
+# 将本地图片路径规整为相对路径（如 ../images/xxx.jpg）
+npx vitepress-image-localizer normalize --relative
 
 # 预览模式
 npx vitepress-image-localizer normalize --dry-run
@@ -90,13 +93,14 @@ npx vitepress-image-localizer normalize -p src/guide
 | `download` | `-p, --path <path>` | 下载指定目录或文件中的图片 |
 | `download` | `-d, --dry-run` | 预览模式，不实际修改 |
 | `download` | `--prefix <prefix>` | 图片路径前缀，默认 `images` |
-| `download` | `--absolute` | 使用绝对路径（默认相对路径） |
+| `download` | `--absolute` | 使用绝对路径（默认 src-relative） |
+| `download` | `--relative` | 使用相对路径（默认 src-relative） |
 | `clean` | `--prefix <prefix>` | 图片路径前缀，默认 `images` |
 | `normalize` | `-p, --path <path>` | 规整指定目录或文件中的图片路径 |
 | `normalize` | `-d, --dry-run` | 预览模式，不实际修改 |
 | `normalize` | `--prefix <prefix>` | 图片路径前缀，默认 `images` |
-| `normalize` | `--absolute` | 使用绝对路径（默认相对路径） |
-| `normalize` | `--src-relative` | 使用 src 相对路径（如 images/xxx.jpg） |
+| `normalize` | `--absolute` | 使用绝对路径（默认 src-relative） |
+| `normalize` | `--relative` | 使用相对路径（默认 src-relative） |
 
 ## 工作原理
 
@@ -110,8 +114,9 @@ npx vitepress-image-localizer normalize -p src/guide
 
 ### 路径模式
 
-- **相对路径（默认）**：根据 Markdown 文件位置计算相对路径，如 `../images/xxx.jpg`
-- **绝对路径（`--absolute`）**：使用 `/prefix/xxx.jpg` 格式，适合 VitePress 环境
+- **src-relative（默认）**：使用 `images/xxx.jpg` 格式，本地打开 md 能显示，VitePress 通过 base 配置也能显示
+- **相对路径（`--relative`）**：根据 Markdown 文件位置计算相对路径，如 `../images/xxx.jpg`
+- **绝对路径（`--absolute`）**：使用 `/images/xxx.jpg` 格式，仅 VitePress 环境可用
 
 ## 配置
 
