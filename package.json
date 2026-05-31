@@ -1,6 +1,6 @@
 {
   "name": "vitepress-image-localizer",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Auto-download remote images and replace with local paths in VitePress",
   "type": "module",
   "bin": {
