@@ -1,4 +1,5 @@
 import fs from 'fs-extra';
+import * as path from 'path';
 import pc from 'picocolors';
 import type { ImageInfo, DownloadResult } from './types.js';
 import nodeFs from 'fs';
@@ -11,13 +12,17 @@ export class Replacer {
     images: ImageInfo[],
     downloadResults: DownloadResult[],
     dryRun: boolean = false,
-    prefix: string = 'images'
+    prefix: string = 'images',
+    publicDir?: string
   ): Promise<void> {
-    // 建立 url -> localPath 的映射
-    const urlToLocal = new Map<string, string>();
+    // 默认 publicDir 为 process.cwd()/public/prefix
+    const imgPublicDir = publicDir || path.join(process.cwd(), 'public', prefix);
+
+    // 建立 url -> filename 的映射
+    const urlToFilename = new Map<string, string>();
     for (const result of downloadResults) {
       if (result.success && result.filename) {
-        urlToLocal.set(result.url, `/${prefix}/${result.filename}`);
+        urlToFilename.set(result.url, result.filename);
       }
     }
 
@@ -36,19 +41,24 @@ export class Replacer {
       let newContent = content;
 
       for (const img of imgs) {
-        const localPath = urlToLocal.get(img.url);
-        if (!localPath) continue;
+        const filename = urlToFilename.get(img.url);
+        if (!filename) continue;
 
-        // 替换 ![alt](url) 为 ![alt](/prefix/xxx.jpg)
+        // 计算相对路径：markdown所在目录 -> publicDir/filename
+        const mdDir = path.dirname(filePath);
+        const relativePath = path.relative(mdDir, path.join(imgPublicDir, filename)).replace(/\\/g, '/');
+
+        // 替换 ![alt](url) 为 ![alt](../prefix/xxx.jpg) 或 ![alt](/prefix/xxx.jpg)
+        // 如果 markdown 在 prefix 目录下，用绝对路径；否则用相对路径
         const pattern = new RegExp(
           `!\\[([^\\]]*)\\]\\(${this.escapeRegex(img.url)}\\)`,
           'g'
         );
-        const replacement = `![$1](${localPath})`;
+        const replacement = `![$1](${relativePath})`;
 
         if (dryRun) {
           console.log(`${pc.yellow('DRY')} ${pc.gray(filePath)}:${img.line}`);
-          console.log(`${pc.gray('    ')} ${img.url} → ${localPath}`);
+          console.log(`${pc.gray('    ')} ${img.url} → ${relativePath}`);
         } else {
           newContent = newContent.replace(pattern, replacement);
         }

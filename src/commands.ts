@@ -105,7 +105,7 @@ export async function runDownload(options: Partial<LocalizerOptions> & { dryRun?
     console.log(pc.bold('\n✏️  Updating markdown files...\n'));
     // 只传下载成功的远程图片结果，不包含本地图片
     const downloadedImages = result.images.filter(img => img.url.startsWith('http'));
-    await replacer.replace(downloadedImages, downloadResults, options.dryRun, prefix);
+    await replacer.replace(downloadedImages, downloadResults, options.dryRun, prefix, imageDir);
   }
 }
 
