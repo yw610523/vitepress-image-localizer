@@ -36,4 +36,6 @@ export interface LocalizerOptions {
   concurrency?: number;
   /** 指定扫描的路径（目录或文件） */
   scanPath?: string;
+  /** 是否使用相对路径，默认 true */
+  useRelative?: boolean;
 }

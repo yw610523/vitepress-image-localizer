@@ -30,9 +30,10 @@ program
   .option('-d, --dry-run', 'Preview mode without actual changes', false)
   .option('-p, --path <path>', 'Scan specific directory or file')
   .option('--prefix <prefix>', 'Image path prefix (default: images)', 'images')
+  .option('--absolute', 'Use absolute paths instead of relative paths', false)
   .action(async (opts) => {
     try {
-      await runDownload({ dryRun: opts.dryRun, scanPath: opts.path, imagePrefix: opts.prefix });
+      await runDownload({ dryRun: opts.dryRun, scanPath: opts.path, imagePrefix: opts.prefix, useRelative: !opts.absolute });
     } catch (error) {
       console.error(pc.red('Error:'), error);
       process.exit(1);

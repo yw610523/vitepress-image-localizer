@@ -13,7 +13,8 @@ export class Replacer {
     downloadResults: DownloadResult[],
     dryRun: boolean = false,
     prefix: string = 'images',
-    publicDir?: string
+    publicDir?: string,
+    useRelative: boolean = true
   ): Promise<void> {
     // 默认 publicDir 为 process.cwd()/public/prefix
     const imgPublicDir = publicDir || path.join(process.cwd(), 'public', prefix);
@@ -44,21 +45,26 @@ export class Replacer {
         const filename = urlToFilename.get(img.url);
         if (!filename) continue;
 
-        // 计算相对路径：markdown所在目录 -> publicDir/filename
-        const mdDir = path.dirname(filePath);
-        const relativePath = path.relative(mdDir, path.join(imgPublicDir, filename)).replace(/\\/g, '/');
+        let targetPath: string;
+        if (useRelative) {
+          // 计算相对路径：markdown所在目录 -> publicDir/filename
+          const mdDir = path.dirname(filePath);
+          targetPath = path.relative(mdDir, path.join(imgPublicDir, filename)).replace(/\\/g, '/');
+        } else {
+          // 使用绝对路径：/prefix/filename
+          targetPath = `/${prefix}/${filename}`;
+        }
 
         // 替换 ![alt](url) 为 ![alt](../prefix/xxx.jpg) 或 ![alt](/prefix/xxx.jpg)
-        // 如果 markdown 在 prefix 目录下，用绝对路径；否则用相对路径
         const pattern = new RegExp(
           `!\\[([^\\]]*)\\]\\(${this.escapeRegex(img.url)}\\)`,
           'g'
         );
-        const replacement = `![$1](${relativePath})`;
+        const replacement = `![$1](${targetPath})`;
 
         if (dryRun) {
           console.log(`${pc.yellow('DRY')} ${pc.gray(filePath)}:${img.line}`);
-          console.log(`${pc.gray('    ')} ${img.url} → ${relativePath}`);
+          console.log(`${pc.gray('    ')} ${img.url} → ${targetPath}`);
         } else {
           newContent = newContent.replace(pattern, replacement);
         }

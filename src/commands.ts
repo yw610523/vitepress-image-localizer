@@ -63,8 +63,9 @@ export async function runScan(options: Partial<LocalizerOptions> & { dryRun?: bo
   console.log(pc.dim(`Total: ${result.totalImages} images in ${result.totalFiles} files`));
 }
 
-export async function runDownload(options: Partial<LocalizerOptions> & { dryRun?: boolean } = {}) {
+export async function runDownload(options: Partial<LocalizerOptions> & { dryRun?: boolean; useRelative?: boolean } = {}) {
   const prefix = options.imagePrefix || 'images';
+  const useRelative = options.useRelative !== false; // 默认使用相对路径
   const config = await loadConfig(prefix);
   const imageDir = await getImageDir(config.srcDir!, prefix);
 
@@ -105,7 +106,7 @@ export async function runDownload(options: Partial<LocalizerOptions> & { dryRun?
     console.log(pc.bold('\n✏️  Updating markdown files...\n'));
     // 只传下载成功的远程图片结果，不包含本地图片
     const downloadedImages = result.images.filter(img => img.url.startsWith('http'));
-    await replacer.replace(downloadedImages, downloadResults, options.dryRun, prefix, imageDir);
+    await replacer.replace(downloadedImages, downloadResults, options.dryRun, prefix, imageDir, useRelative);
   }
 }
 
@@ -144,10 +145,11 @@ export async function runClean(options: { imagePrefix?: string } = {}) {
       const filename = img.url.split('/').pop();
       if (filename) referencedImages.add(filename);
     }
-    // 本地图片：直接取路径中的文件名
-    else if (img.url.startsWith(`/${prefix}/`)) {
-      const filename = img.url.replace(`/${prefix}/`, '');
-      referencedImages.add(filename);
+    // 本地图片：提取路径中的文件名（处理绝对路径和相对路径）
+    else {
+      // 尝试从路径中提取文件名
+      const filename = img.url.split('/').pop();
+      if (filename) referencedImages.add(filename);
     }
   }
 
