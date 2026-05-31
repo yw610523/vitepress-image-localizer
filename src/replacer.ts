@@ -14,7 +14,8 @@ export class Replacer {
     dryRun: boolean = false,
     prefix: string = 'images',
     publicDir?: string,
-    useRelative: boolean = true
+    useRelative: boolean = true,
+    useSrcRelative: boolean = false
   ): Promise<void> {
     // 默认 publicDir 为 process.cwd()/public/prefix
     const imgPublicDir = publicDir || path.join(process.cwd(), 'public', prefix);
@@ -46,7 +47,10 @@ export class Replacer {
         if (!filename) continue;
 
         let targetPath: string;
-        if (useRelative) {
+        if (useSrcRelative) {
+          // 基于 srcDir 的路径：images/xxx.jpg
+          targetPath = `${prefix}/${filename}`;
+        } else if (useRelative) {
           // 计算相对路径：markdown所在目录 -> publicDir/filename
           const mdDir = path.dirname(filePath);
           targetPath = path.relative(mdDir, path.join(imgPublicDir, filename)).replace(/\\/g, '/');
@@ -86,7 +90,8 @@ export class Replacer {
     dryRun: boolean = false,
     prefix: string = 'images',
     publicDir?: string,
-    useRelative: boolean = true
+    useRelative: boolean = true,
+    useSrcRelative: boolean = false
   ): Promise<void> {
     // 默认 publicDir 为 process.cwd()/public/prefix
     const imgPublicDir = publicDir || path.join(process.cwd(), 'public', prefix);
@@ -111,7 +116,10 @@ export class Replacer {
         if (!filename) continue;
 
         let targetPath: string;
-        if (useRelative) {
+        if (useSrcRelative) {
+          // 基于 srcDir 的路径：images/xxx.jpg
+          targetPath = `${prefix}/${filename}`;
+        } else if (useRelative) {
           // 计算相对路径：markdown所在目录 -> publicDir/filename
           const mdDir = path.dirname(filePath);
           targetPath = path.relative(mdDir, path.join(imgPublicDir, filename)).replace(/\\/g, '/');

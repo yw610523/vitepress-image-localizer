@@ -63,8 +63,9 @@ export async function runScan(options: Partial<LocalizerOptions> & { dryRun?: bo
   console.log(pc.dim(`Total: ${result.totalImages} images in ${result.totalFiles} files`));
 }
 
-export async function runDownload(options: Partial<LocalizerOptions> & { dryRun?: boolean; useRelative?: boolean } = {}) {
+export async function runDownload(options: Partial<LocalizerOptions> & { dryRun?: boolean; useRelative?: boolean; useSrcRelative?: boolean } = {}) {
   const prefix = options.imagePrefix || 'images';
+  const useSrcRelative = options.useSrcRelative === true;
   const useRelative = options.useRelative !== false; // 默认使用相对路径
   const config = await loadConfig(prefix);
   const imageDir = await getImageDir(config.srcDir!, prefix);
@@ -106,7 +107,7 @@ export async function runDownload(options: Partial<LocalizerOptions> & { dryRun?
     console.log(pc.bold('\n✏️  Updating markdown files...\n'));
     // 只传下载成功的远程图片结果，不包含本地图片
     const downloadedImages = result.images.filter(img => img.url.startsWith('http'));
-    await replacer.replace(downloadedImages, downloadResults, options.dryRun, prefix, imageDir, useRelative);
+    await replacer.replace(downloadedImages, downloadResults, options.dryRun, prefix, imageDir, useRelative, useSrcRelative);
   }
 }
 
@@ -211,8 +212,9 @@ export async function runClean(options: { imagePrefix?: string } = {}) {
   console.log(pc.green(`\n✅ Deleted ${toDelete.length} images`));
 }
 
-export async function runNormalize(options: Partial<LocalizerOptions> & { dryRun?: boolean; useRelative?: boolean } = {}) {
+export async function runNormalize(options: Partial<LocalizerOptions> & { dryRun?: boolean; useRelative?: boolean; useSrcRelative?: boolean } = {}) {
   const prefix = options.imagePrefix || 'images';
+  const useSrcRelative = options.useSrcRelative === true;
   const useRelative = options.useRelative !== false; // 默认使用相对路径
   const config = await loadConfig(prefix);
   const imageDir = await getImageDir(config.srcDir!, prefix);
@@ -235,10 +237,10 @@ export async function runNormalize(options: Partial<LocalizerOptions> & { dryRun
 
   if (!options.dryRun) {
     console.log(pc.bold('\n✏️  Normalizing markdown files...\n'));
-    await replacer.normalize(localImages, options.dryRun, prefix, imageDir, useRelative);
+    await replacer.normalize(localImages, options.dryRun, prefix, imageDir, useRelative, useSrcRelative);
     console.log(pc.green(`\n✅ Normalized ${localImages.length} image references`));
   } else {
     // dry-run 模式需要手动调用 normalize 并打印预览
-    await replacer.normalize(localImages, true, prefix, imageDir, useRelative);
+    await replacer.normalize(localImages, true, prefix, imageDir, useRelative, useSrcRelative);
   }
 }

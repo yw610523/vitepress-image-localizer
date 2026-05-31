@@ -59,10 +59,11 @@ program
   .option('-d, --dry-run', 'Preview mode without actual changes', false)
   .option('-p, --path <path>', 'Normalize specific directory or file')
   .option('--prefix <prefix>', 'Image path prefix (default: images)', 'images')
-  .option('--absolute', 'Use absolute paths instead of relative paths', false)
+  .option('--absolute', 'Use absolute paths (e.g. /images/xxx.jpg)', false)
+  .option('--src-relative', 'Use src-relative paths (e.g. images/xxx.jpg, good for local viewing)', false)
   .action(async (opts) => {
     try {
-      await runNormalize({ dryRun: opts.dryRun, scanPath: opts.path, imagePrefix: opts.prefix, useRelative: !opts.absolute });
+      await runNormalize({ dryRun: opts.dryRun, scanPath: opts.path, imagePrefix: opts.prefix, useRelative: !opts.absolute, useSrcRelative: opts.srcRelative });
     } catch (error) {
       console.error(pc.red('Error:'), error);
       process.exit(1);

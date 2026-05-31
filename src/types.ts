@@ -38,4 +38,6 @@ export interface LocalizerOptions {
   scanPath?: string;
   /** 是否使用相对路径，默认 true */
   useRelative?: boolean;
+  /** 是否使用基于 srcDir 的相对路径（如 images/xxx.jpg），默认 false */
+  useSrcRelative?: boolean;
 }
