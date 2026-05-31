@@ -2,14 +2,17 @@
 
 import { Command } from 'commander';
 import pc from 'picocolors';
+import { readFileSync } from 'fs';
 import { runScan, runDownload, runClean, runNormalize } from './commands.js';
+
+const pkg = JSON.parse(readFileSync('./package.json', 'utf-8'));
 
 const program = new Command();
 
 program
   .name('vitepress-image-localizer')
   .description('Auto-download remote images and replace with local paths in VitePress')
-  .version('1.0.0');
+  .version(pkg.version);
 
 program
   .command('scan')
