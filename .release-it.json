@@ -3,7 +3,7 @@
     "commitMessage": "Release v${version}\n\nCo-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
   },
   "npm": {
-    "publishArgs": ["--registry", "https://registry.yys2024.cn/repository/npm/"]
+    "publishArgs": ["--registry", "https://registry.yys2024.cn/repository/npm-hosted/"]
   },
   "hooks": {
     "before:init": ["npm run build"]
